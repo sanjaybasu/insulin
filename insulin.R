@@ -3,17 +3,16 @@ library(knitr)
 library(tidyverse)
 library(broom)
 library(data.table)
-setwd("//phs-isilon.private/phs/data/Optum/sample_dataset/csv/sample/")
 
-lab = read_csv("sample1pct_zip5_lr.csv")
-rx = read_csv("sample1pct_zip5_r.csv")
-mbr <- read_csv("sample1pct_zip5_mbr.csv",
+lab = read_csv("zip5_lr.csv")
+rx = read_csv("zip5_r.csv")
+mbr <- read_csv("zip5_mbr.csv",
                 col_types = cols(Aso = col_skip(), Bus = col_skip(),
                                  Cdhp = col_skip(), Eligeff = col_skip(),
                                  Eligend = col_skip(), Extract_Ym = col_skip(),
                                  Group_Nbr = col_skip(), Health_Exch = col_skip(),
                                  Product = col_skip(), Version = col_skip()))
-m <- read_csv("sample1pct_zip5_m.csv",
+m <- read_csv("zip5_m.csv",
               col_types = cols(Admit_Chan = col_skip(),
                                Admit_Type = col_skip(), Bill_Prov = col_skip(),
                                Charge = col_skip(), Clmid = col_skip(),
@@ -107,131 +106,114 @@ panel <- pdata.frame(dm, index=c("Patid", "Fst_Dt"))
 kable(tidy(plm(hgba1c~age+sex+zip+yr+dolperunits-1, data=panel, model="fd")), digits=3)
 kable(tidy(plm(nhgba1c~age+sex+zip+yr+ndolperunits-1, data=panel, model="fd")), digits=3)
 
-# > 8.264*sqrt(dim(dm)[2])*(sqrt(dim(dm)[2])*100)
-# [1] 9090.4
-# > 8.264*sqrt(dim(dm)[2])/(sqrt(dim(dm)[2])*100)
-# [1] 0.08264
-# > 1.437-.08264*1.96
-# [1] 1.275026
-# > 1.437+.08264*1.96
-# [1] 1.598974
-
-
-# kable(tidy(plm(hgba1c~dolperunits,
-#                data=panel,
-#                model="within")), digits=3)
-# kable(tidy(lm(hgba1c~dolperunits,
-#               data=dm)), digits=3)
-
 mt = m %>%
   select(Patid, Drg, Diag1, Fst_Dt, Pos, Copay, Deduct, Coins, Std_Cost) %>%
-  # filter((Diag1=='E1010') |
-  #          (Diag1=='E1011') |
-  #          (Diag1=='E10618') |
-  #          (Diag1=='E10620') |
-  #          (Diag1=='E10621') |
-  #          (Diag1=='E10622') |
-  #          (Diag1=='E10628') |
-  #          (Diag1=='E10630') |
-  #          (Diag1=='E10638') |
-  #          (Diag1=='E10641') |
-  #          (Diag1=='E10649') |
-  #          (Diag1=='E1065') |
-  #          (Diag1=='E1069') |
-  #          (Diag1=='E108') |
-  #          (Diag1=='E109') |
-  #          (Diag1=='E1100') |
-  #          (Diag1=='E1101') |
-  #          (Diag1=='E11618') |
-  #          (Diag1=='E11620') |
-  #          (Diag1=='E11621') |
-  #          (Diag1=='E11622') |
-  #          (Diag1=='E11628') |
-  #          (Diag1=='E11630') |
-  #          (Diag1=='E11638') |
-  #          (Diag1=='E11641') |
-  #          (Diag1=='E11649') |
-  #          (Diag1=='E1165') |
-  #          (Diag1=='E1169') |
-  #          (Diag1=='E118') |
-  #          (Diag1=='E119') |
-  #          (Diag1=='E1300') |
-  #          (Diag1=='E1301') |
-  #          (Diag1=='E1310') |
-  #          (Diag1=='E1311') |
-  #          (Diag1=='E13618') |
-  #          (Diag1=='E13620') |
-  #          (Diag1=='E13621') |
-  #          (Diag1=='E13622') |
-  #          (Diag1=='E13628') |
-  #          (Diag1=='E13630') |
-  #          (Diag1=='E13638') |
-  #          (Diag1=='E13641') |
-  #          (Diag1=='E13649') |
-  #          (Diag1=='E1365') |
-  #          (Diag1=='E1369') |
-  #          (Diag1=='E138') |
-  #          (Diag1=='E139') |
-  #          (Diag1=='E10311') |
-  #          (Diag1=='E10319') |
-  #          (Diag1=='E10321') |
-  #          (Diag1=='E10329') |
-  #          (Diag1=='E10331') |
-  #          (Diag1=='E10339') |
-  #          (Diag1=='E10341') |
-  #          (Diag1=='E10349') |
-  #          (Diag1=='E10351') |
-  #          (Diag1=='E10359') |
-  #          (Diag1=='E1036') |
-  #          (Diag1=='E1039') |
-  #          (Diag1=='E11311') |
-  #          (Diag1=='E11319') |
-  #          (Diag1=='E11321') |
-  #          (Diag1=='E11329') |
-  #          (Diag1=='E11331') |
-  #          (Diag1=='E11339') |
-  #          (Diag1=='E11341') |
-  #          (Diag1=='E11349') |
-  #          (Diag1=='E11351') |
-  #          (Diag1=='E11359') |
-  #          (Diag1=='E1136') |
-  #          (Diag1=='E1139') |
-  #          (Diag1=='E13311') |
-  #          (Diag1=='E13319') |
-  #          (Diag1=='E13321') |
-  #          (Diag1=='E13329') |
-  #          (Diag1=='E13331') |
-  #          (Diag1=='E13339') |
-  #          (Diag1=='E13341') |
-  #          (Diag1=='E13349') |
-  #          (Diag1=='E13351') |
-  #          (Diag1=='E13359') |
-  #          (Diag1=='E1336') |
-  #          (Diag1=='E1339') |
-  #          (Diag1=='E1040') |
-  #          (Diag1=='E1041') |
-  #          (Diag1=='E1042') |
-  #          (Diag1=='E1043') |
-  #          (Diag1=='E1044') |
-  #          (Diag1=='E1049') |
-  #          (Diag1=='E10610') |
-  #          (Diag1=='E1140') |
-  #          (Diag1=='E1141') |
-  #          (Diag1=='E1142') |
-  #          (Diag1=='E1143') |
-  #          (Diag1=='E1144') |
-  #          (Diag1=='E1149') |
-  #          (Diag1=='E11610') |
-  #          (Diag1=='E1340') |
-  #          (Diag1=='E1341') |
-  #          (Diag1=='E1342') |
-  #          (Diag1=='E1343') |
-  #          (Diag1=='E1344') |
-  #          (Diag1=='E1349') |
-  #          (Diag1=='E13610')) %>%
+  filter((Diag1=='E1010') |
+            (Diag1=='E1011') |
+            (Diag1=='E10618') |
+            (Diag1=='E10620') |
+            (Diag1=='E10621') |
+            (Diag1=='E10622') |
+            (Diag1=='E10628') |
+            (Diag1=='E10630') |
+            (Diag1=='E10638') |
+            (Diag1=='E10641') |
+            (Diag1=='E10649') |
+            (Diag1=='E1065') |
+            (Diag1=='E1069') |
+            (Diag1=='E108') |
+            (Diag1=='E109') |
+            (Diag1=='E1100') |
+            (Diag1=='E1101') |
+            (Diag1=='E11618') |
+            (Diag1=='E11620') |
+            (Diag1=='E11621') |
+            (Diag1=='E11622') |
+            (Diag1=='E11628') |
+            (Diag1=='E11630') |
+            (Diag1=='E11638') |
+            (Diag1=='E11641') |
+            (Diag1=='E11649') |
+            (Diag1=='E1165') |
+            (Diag1=='E1169') |
+            (Diag1=='E118') |
+            (Diag1=='E119') |
+            (Diag1=='E1300') |
+            (Diag1=='E1301') |
+            (Diag1=='E1310') |
+            (Diag1=='E1311') |
+            (Diag1=='E13618') |
+            (Diag1=='E13620') |
+            (Diag1=='E13621') |
+            (Diag1=='E13622') |
+            (Diag1=='E13628') |
+            (Diag1=='E13630') |
+            (Diag1=='E13638') |
+            (Diag1=='E13641') |
+            (Diag1=='E13649') |
+            (Diag1=='E1365') |
+            (Diag1=='E1369') |
+            (Diag1=='E138') |
+            (Diag1=='E139') |
+            (Diag1=='E10311') |
+            (Diag1=='E10319') |
+            (Diag1=='E10321') |
+            (Diag1=='E10329') |
+            (Diag1=='E10331') |
+            (Diag1=='E10339') |
+            (Diag1=='E10341') |
+            (Diag1=='E10349') |
+            (Diag1=='E10351') |
+            (Diag1=='E10359') |
+            (Diag1=='E1036') |
+            (Diag1=='E1039') |
+            (Diag1=='E11311') |
+            (Diag1=='E11319') |
+            (Diag1=='E11321') |
+            (Diag1=='E11329') |
+            (Diag1=='E11331') |
+            (Diag1=='E11339') |
+            (Diag1=='E11341') |
+            (Diag1=='E11349') |
+            (Diag1=='E11351') |
+            (Diag1=='E11359') |
+            (Diag1=='E1136') |
+            (Diag1=='E1139') |
+            (Diag1=='E13311') |
+            (Diag1=='E13319') |
+            (Diag1=='E13321') |
+            (Diag1=='E13329') |
+            (Diag1=='E13331') |
+            (Diag1=='E13339') |
+            (Diag1=='E13341') |
+            (Diag1=='E13349') |
+            (Diag1=='E13351') |
+            (Diag1=='E13359') |
+            (Diag1=='E1336') |
+            (Diag1=='E1339') |
+            (Diag1=='E1040') |
+            (Diag1=='E1041') |
+            (Diag1=='E1042') |
+            (Diag1=='E1043') |
+            (Diag1=='E1044') |
+            (Diag1=='E1049') |
+            (Diag1=='E10610') |
+            (Diag1=='E1140') |
+            (Diag1=='E1141') |
+            (Diag1=='E1142') |
+            (Diag1=='E1143') |
+            (Diag1=='E1144') |
+            (Diag1=='E1149') |
+            (Diag1=='E11610') |
+            (Diag1=='E1340') |
+            (Diag1=='E1341') |
+            (Diag1=='E1342') |
+            (Diag1=='E1343') |
+            (Diag1=='E1344') |
+            (Diag1=='E1349') |
+            (Diag1=='E13610')) %>%
   filter(Drg>=637 & Drg<=639) %>%
-  filter(Pos==11 | Pos==21 | Pos==22 | Pos==23 | Pos==41 | Pos==49 | Pos==50 | Pos==71 | Pos==17 | Pos==20) %>%
-#  filter((Pos>16 & Pos<24) | (Pos>40 & Pos<51) | (Pos==71)) %>% 
+  filter((Pos>16 & Pos<24) | (Pos>40 & Pos<51) | (Pos==71)) %>% 
   mutate(event = 1,
          Fst_Dt = lubridate::mdy(Fst_Dt))
 
