@@ -1,6 +1,6 @@
 ------------------------------------------------------------------
 ------------------------------------------------------------------
--- Project: Improving Incorporation of Social Determinants of Health into Risk
+-- Project: Clinical and economic consequences of insulin cost
 -- Table: A1c vs insulin price
 -- Last updated: Thu Apr 04 2019 23:04:59 GMT+0000 (Coordinated Universal Time)
 -- Generated at: Thu Apr 04 2019 23:16:56 GMT+0000 (Coordinated Universal Time)
@@ -101,7 +101,7 @@ ORDER BY Patid ASC
                                            
 ------------------------------------------------------------------
 ------------------------------------------------------------------
--- Project: Improving Incorporation of Social Determinants of Health into Risk
+-- Project: Clinical and economic consequences of insulin cost
 -- Table: Event vs insulin price
 -- Last updated: Thu Apr 04 2019 22:58:28 GMT+0000 (Coordinated Universal Time)
 -- Generated at: Thu Apr 04 2019 23:15:41 GMT+0000 (Coordinated Universal Time)
