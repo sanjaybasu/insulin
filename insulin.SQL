@@ -7,15 +7,24 @@
 ------------------------------------------------------------------
 ------------------------------------------------------------------
 
+------------------------------------------------------------------
+------------------------------------------------------------------
+-- Project: Improving Incorporation of Social Determinants of Health into Risk
+-- Table: Transform 15 - output
+-- Last updated: Sat Apr 13 2019 16:46:31 GMT+0000 (Coordinated Universal Time)
+-- Generated at: Sat Apr 13 2019 19:05:02 GMT+0000 (Coordinated Universal Time)
+------------------------------------------------------------------
+------------------------------------------------------------------
+
 
 
 ------------------------------------------------------------------
 -- Transform: Transform 9
--- Description: Member
+-- Description: None provided
 ------------------------------------------------------------------
 WITH
 variables AS (
-SELECT t0.Zipcode_5 as Zipcode_5, t0.Patid as Patid, t0.Gdr_Cd as Gdr_Cd, t0.Yrdob as Yrdob, t0.Eligeff as Eligeff, t0.Eligend as Eligend,
+SELECT t0.Patid as Patid, t0.Yrdob as Yrdob, t0.Zipcode_5 as Zipcode_5, t0.Eligend as Eligend, t0.Eligeff as Eligeff, t0.Gdr_Cd as Gdr_Cd,
 2017 - t0.`Yrdob` as age,
 CASE WHEN (t0.`Gdr_Cd` = 'F')
 THEN 1
@@ -24,30 +33,16 @@ SUBSTR(t0.`Zipcode_5`, 0, 5) as zip,
 DATE_DIFF(t0.`Eligend`, t0.`Eligeff`, day) as enrollduration
 FROM `Optum ZIP5 Member` as t0)
 
-SELECT Zipcode_5, Patid, Gdr_Cd, Yrdob, Eligeff, Eligend, age, sex, zip, enrollduration FROM variables
-WHERE (age < 65)
-
-------------------------------------------------------------------
--- Transform: Transform 2
--- Description: Lab
-------------------------------------------------------------------
-WITH
-variables AS (
-SELECT t0.Rslt_Nbr as Rslt_Nbr, t0.Loinc_Cd as t0_Loinc_Cd, t0.Fst_Dt as Fst_Dt, t0.Patid as Patid
-
-FROM `Optum ZIP5 Laboratory Results` as t0)
-
-SELECT Rslt_Nbr, Fst_Dt, Patid FROM variables
-WHERE (t0_Loinc_Cd = '4548-4')
-ORDER BY Fst_Dt ASC
+SELECT Patid, Yrdob, Zipcode_5, Eligend, Eligeff, Gdr_Cd, age, sex, zip, enrollduration FROM variables
+WHERE (age < 2017)
 
 ------------------------------------------------------------------
 -- Transform: Transform 4
--- Description: Pharmacy
+-- Description: None provided
 ------------------------------------------------------------------
 WITH
 variables AS (
-SELECT t0.Ahfsclss as t0_Ahfsclss, t0.Deduct as t0_Deduct, t0.Copay as t0_Copay, t0.Patid as Patid, t0.Quantity as t0_Quantity, t0.Fill_Dt as Fill_Dt, t0.Dispfee as t0_Dispfee,
+SELECT t0.Patid as Patid, t0.Gnrc_Nm as t0_Gnrc_Nm, t0.Quantity as t0_Quantity, t0.Fill_Dt as Fill_Dt, t0.Dispfee as t0_Dispfee, t0.Ahfsclss as t0_Ahfsclss, t0.Std_Cost_Yr as Std_Cost_Yr, t0.Deduct as t0_Deduct, t0.Copay as t0_Copay,
 t0.`Copay` + t0.`Deduct` as oopcpre,
 t0.`Copay` + t0.`Deduct` + t0.`Dispfee` as oopc,
 t0.`Quantity` * 100 as quantity100,
@@ -56,146 +51,96 @@ THEN NULL
 ELSE t0.`Quantity` * 100 END as quantity100fixed,
 t0.`Copay` + t0.`Deduct` + t0.`Dispfee` / CASE WHEN (t0.`Quantity` * 100 =  0.0)
 THEN NULL
-ELSE t0.`Quantity` * 100 END as dolperunits
+ELSE t0.`Quantity` * 100 END as dolperunits,
+0 as event
 FROM `Optum ZIP5 Rx Pharmacy` as t0)
 
-SELECT Patid, Fill_Dt, oopcpre, oopc, quantity100, quantity100fixed, dolperunits FROM variables
-WHERE (t0_Ahfsclss = '682008')
-ORDER BY Fill_Dt ASC
-
-------------------------------------------------------------------
--- Transform: Transform 5
--- Description: Lab + Pharmacy
-------------------------------------------------------------------
-WITH
-variables AS (
-SELECT t0.Patid as Patid, t0.Fst_Dt as Fst_Dt, t0.Rslt_Nbr as Rslt_Nbr, t1.dolperunits as dolperunits, t1.Fill_Dt as Fill_Dt, t1.Patid as t1_Patid,
-DATE_DIFF(t0.`Fst_Dt`, t1.`Fill_Dt`, day) as tnull_Date_ABS_Diff,
-EXTRACT(MONTH FROM t0.`Fst_Dt`) as month,
-EXTRACT(YEAR FROM t0.`Fst_Dt`) as year
-FROM `Transform 2 - output` as t0
-FULL JOIN `Transform 4 - output` as t1 ON (t0.`Patid` = t1.`Patid`))
-
-SELECT Patid, Fst_Dt, Rslt_Nbr, dolperunits, Fill_Dt, month, year FROM variables
-WHERE (tnull_Date_ABS_Diff IS NOT NULL) and  (tnull_Date_ABS_Diff >= 0)
+SELECT Patid, Fill_Dt, Std_Cost_Yr, oopcpre, oopc, quantity100, quantity100fixed, dolperunits, event FROM variables
+WHERE (t0_Ahfsclss = '682008') or  (t0_Gnrc_Nm LIKE r'''%INSULIN%''')
 ORDER BY Patid ASC
 
 ------------------------------------------------------------------
--- Transform: Transform 12
--- Description: Lab + Pharmacy + Member
+-- Transform: Transform 15
+-- Description: None provided
 ------------------------------------------------------------------
 WITH
 variables AS (
-SELECT t0.zip as zip, t0.sex as sex, t0.age as age, t0.Eligeff as t0_Eligeff, t0.Patid as t0_Patid, t1.year as year, t1.month as month, t1.Fill_Dt as t1_Fill_Dt, t1.dolperunits as dolperunits, t1.Rslt_Nbr as Rslt_Nbr, t1.Fst_Dt as t1_Fst_Dt, t1.Patid as Patid,
-DATE_DIFF(t1.`Fill_Dt`, t0.`Eligeff`, day) as time1,
-DATE_DIFF(t1.`Fst_Dt`, t0.`Eligeff`, day) as time2
+SELECT t0.Eligeff as t0_Eligeff, t0.Patid as Patid, t1.event as event, t1.dolperunits as dolperunits, t1.Std_Cost_Yr as Std_Cost_Yr, t1.Fill_Dt as Fill_Dt, t1.Patid as t1_Patid,
+DATE_DIFF(t1.`Fill_Dt`, t0.`Eligeff`, day) as time
 FROM `Transform 9 - output` as t0
-FULL JOIN `Transform 5 - output` as t1 ON (t0.`Patid` = t1.`Patid`))
+RIGHT JOIN `Transform 4 - output` as t1 ON (t0.`Patid` = t1.`Patid`))
 
-SELECT zip, sex, age, year, month, dolperunits, Rslt_Nbr, Patid, time1, time2 FROM variables
+SELECT Patid, event, dolperunits, Std_Cost_Yr, Fill_Dt, time FROM variables
+WHERE (time >= 0)
 ORDER BY Patid ASC
-                                           
-                                           
-                                           
-                                           
-                                           
+                                            
+                                            
+                                            
 ------------------------------------------------------------------
 ------------------------------------------------------------------
--- Project: Clinical and economic consequences of insulin cost
--- Table: Event vs insulin price
--- Last updated: Thu Apr 04 2019 22:58:28 GMT+0000 (Coordinated Universal Time)
--- Generated at: Thu Apr 04 2019 23:15:41 GMT+0000 (Coordinated Universal Time)
+-- Project: Improving Incorporation of Social Determinants of Health into Risk
+-- Table: Transform 18 - output
+-- Last updated: Sat Apr 13 2019 17:55:34 GMT+0000 (Coordinated Universal Time)
+-- Generated at: Sat Apr 13 2019 19:05:47 GMT+0000 (Coordinated Universal Time)
 ------------------------------------------------------------------
 ------------------------------------------------------------------
 
 
-
-------------------------------------------------------------------
--- Transform: Transform 9
--- Description: Member
-------------------------------------------------------------------
-WITH
-variables AS (
-SELECT t0.Zipcode_5 as Zipcode_5, t0.Patid as Patid, t0.Gdr_Cd as Gdr_Cd, t0.Yrdob as Yrdob, t0.Eligeff as Eligeff, t0.Eligend as Eligend,
-2017 - t0.`Yrdob` as age,
-CASE WHEN (t0.`Gdr_Cd` = 'F')
-THEN 1
-ELSE 0 END as sex,
-SUBSTR(t0.`Zipcode_5`, 0, 5) as zip,
-DATE_DIFF(t0.`Eligend`, t0.`Eligeff`, day) as enrollduration
-FROM `Optum ZIP5 Member` as t0)
-
-SELECT Zipcode_5, Patid, Gdr_Cd, Yrdob, Eligeff, Eligend, age, sex, zip, enrollduration FROM variables
-WHERE (age < 65)
 
 ------------------------------------------------------------------
 -- Transform: Transform 6
--- Description: Event
+-- Description: None provided
 ------------------------------------------------------------------
 WITH
 variables AS (
-SELECT t0.Std_Cost_Yr as Std_Cost_Yr, t0.Std_Cost as Std_Cost, t0.Drg as Drg, t0.Patid as Patid, t0.Fst_Dt as Fst_Dt,
-CASE WHEN (t0.`Std_Cost` IS NOT NULL)
+SELECT t0.Drg as Drg, t0.Fst_Dt as Fst_Dt, t0.Std_Cost as Std_Cost, t0.Std_Cost_Yr as Std_Cost_Yr, t0.Diag1 as Diag1, t0.Pos as t0_Pos, t0.Patid as Patid,
+1 as event,
+CASE WHEN (t0.`Diag1` LIKE r'''250_1''') or  (t0.`Diag1` LIKE r'''250_3''') or  (t0.`Diag1` LIKE r'''E10%''')
 THEN 1
-ELSE 0 END as event
+ELSE 2 END as type
 FROM `Optum ZIP5 Medical Claims` as t0)
 
-SELECT Std_Cost_Yr, Std_Cost, Drg, Patid, Fst_Dt, event FROM variables
-WHERE (Drg >= '637') and  (Drg <= '639')
-ORDER BY Fst_Dt ASC
+SELECT Drg, Fst_Dt, Std_Cost, Std_Cost_Yr, Diag1, Patid, event, type FROM variables
+WHERE (Drg >= '637') and  (Drg <= '639') and  (COALESCE(Diag1 != '\'E089\'', true)) and  (COALESCE(Diag1 != '\'E099', true)) and  (COALESCE(Diag1 != '\'E109\'', true)) and  (COALESCE(Diag1 != '\'E119', true)) and  (COALESCE(Diag1 != '\'E139\'', true)) and  (t0_Pos >= '20') and  (t0_Pos <= '23') and  (COALESCE(Diag1 != '25000', true)) and  (COALESCE(Diag1 != '25001', true)) and  (COALESCE(Diag1 != '25002', true)) and  (COALESCE(Diag1 != '25003', true))
+ORDER BY Patid ASC
 
 ------------------------------------------------------------------
--- Transform: Transform 4
--- Description: Pharmacy
+-- Transform: Transform 9
+-- Description: None provided
 ------------------------------------------------------------------
 WITH
 variables AS (
-SELECT t0.Ahfsclss as t0_Ahfsclss, t0.Deduct as t0_Deduct, t0.Copay as t0_Copay, t0.Patid as Patid, t0.Quantity as t0_Quantity, t0.Fill_Dt as Fill_Dt, t0.Dispfee as t0_Dispfee,
-t0.`Copay` + t0.`Deduct` as oopcpre,
-t0.`Copay` + t0.`Deduct` + t0.`Dispfee` as oopc,
-t0.`Quantity` * 100 as quantity100,
-CASE WHEN (t0.`Quantity` * 100 =  0.0)
-THEN NULL
-ELSE t0.`Quantity` * 100 END as quantity100fixed,
-t0.`Copay` + t0.`Deduct` + t0.`Dispfee` / CASE WHEN (t0.`Quantity` * 100 =  0.0)
-THEN NULL
-ELSE t0.`Quantity` * 100 END as dolperunits
-FROM `Optum ZIP5 Rx Pharmacy` as t0)
+SELECT t0.Patid as Patid, t0.Yrdob as Yrdob, t0.Zipcode_5 as Zipcode_5, t0.Eligend as Eligend, t0.Eligeff as Eligeff, t0.Gdr_Cd as Gdr_Cd,
+2017 - t0.`Yrdob` as age,
+CASE WHEN (t0.`Gdr_Cd` = 'F')
+THEN 1
+ELSE 0 END as sex,
+SUBSTR(t0.`Zipcode_5`, 0, 5) as zip,
+DATE_DIFF(t0.`Eligend`, t0.`Eligeff`, day) as enrollduration
+FROM `Optum ZIP5 Member` as t0)
 
-SELECT Patid, Fill_Dt, oopcpre, oopc, quantity100, quantity100fixed, dolperunits FROM variables
-WHERE (t0_Ahfsclss = '682008')
-ORDER BY Fill_Dt ASC
+SELECT Patid, Yrdob, Zipcode_5, Eligend, Eligeff, Gdr_Cd, age, sex, zip, enrollduration FROM variables
+WHERE (age < 2017)
 
 ------------------------------------------------------------------
--- Transform: Transform 8
--- Description: Event + Pharmacy
+-- Transform: Transform 18
+-- Description: None provided
 ------------------------------------------------------------------
 WITH
 variables AS (
-SELECT t0.event as t0_event, t0.Fst_Dt as Fst_Dt, t0.Patid as t0_Patid, t1.dolperunits as dolperunits, t1.Fill_Dt as Fill_Dt, t1.Patid as Patid,
+SELECT t0.type as type, t0.event as t0_event, t0.Patid as t0_Patid, t0.Diag1 as Diag1, t0.Fst_Dt as t0_Fst_Dt, t1.zip as zip, t1.sex as sex, t1.age as age, t1.Eligeff as t1_Eligeff, t1.Eligend as t1_Eligend, t1.Patid as Patid,
+DATE_DIFF(t0.`Fst_Dt`, t1.`Eligeff`, day) as tnull_timepre,
+DATE_DIFF(t1.`Eligend`, t1.`Eligeff`, day) as timeenr,
+CASE WHEN (t0.`event` = 1)
+THEN DATE_DIFF(t0.`Fst_Dt`, t1.`Eligeff`, day)
+ELSE DATE_DIFF(t1.`Eligend`, t1.`Eligeff`, day) END as time,
 CASE WHEN (t0.`event` = 1)
 THEN 1
-ELSE 0 END as eventfixed,
-DATE_DIFF(t0.`Fst_Dt`, t1.`Fill_Dt`, day) as tnull_Date_ABS_Diff,
-EXTRACT(MONTH FROM t0.`Fst_Dt`) as month,
-EXTRACT(YEAR FROM t0.`Fst_Dt`) as year
+ELSE 0 END as event
 FROM `Transform 6 - output` as t0
-FULL JOIN `Transform 4 - output` as t1 ON (t0.`Patid` = t1.`Patid`))
+FULL JOIN `Transform 9 - output` as t1 ON (t0.`Patid` = t1.`Patid`))
 
-SELECT Fst_Dt, dolperunits, Fill_Dt, Patid, eventfixed, month, year FROM variables
-WHERE (tnull_Date_ABS_Diff IS NOT NULL) or  (tnull_Date_ABS_Diff >= 0)
-
-------------------------------------------------------------------
--- Transform: Transform 11
--- Description: Event + Pharmacy + Member
-------------------------------------------------------------------
-WITH
-variables AS (
-SELECT t0.zip as zip, t0.sex as sex, t0.age as age, t0.Eligeff as t0_Eligeff, t0.Patid as t0_Patid, t1.year as year, t1.month as month, t1.eventfixed as eventfixed, t1.Patid as Patid, t1.Fill_Dt as t1_Fill_Dt, t1.dolperunits as dolperunits, t1.Fst_Dt as t1_Fst_Dt,
-DATE_DIFF(t1.`Fill_Dt`, t0.`Eligeff`, day) as time1,
-DATE_DIFF(t1.`Fst_Dt`, t0.`Eligeff`, day) as time2
-FROM `Transform 9 - output` as t0
-FULL JOIN `Transform 8 - output` as t1 ON (t0.`Patid` = t1.`Patid`))
-
-SELECT zip, sex, age, year, month, eventfixed, Patid, dolperunits, time1, time2 FROM variables
-ORDER BY t0_Patid ASC                                           
+SELECT DISTINCT type, Diag1, zip, sex, age, Patid, timeenr, time, event FROM variables
+WHERE (time > 0)
+ORDER BY Patid ASC                                            
+                                            
