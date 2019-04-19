@@ -8,4 +8,4 @@ Objective: To test the hypothesis that increased out-of-pocket insulin prices ar
 
 Design: Secondary analyses of administrative claims data (years 2003-2016), analyzed in April 2019. 
 
-*s.basu@imperial.ac.uk
+*sanjay_basu@hms.harvard.edu
