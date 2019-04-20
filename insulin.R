@@ -132,10 +132,11 @@ data1c = hba1c %>%
 summary(data1c$a1c)
 
 panel <- pdata.frame(data1c, index=c("Patid", "Fst_Dt"))
-kable(tidy(plm(a1c~dolper1000units-1, data=panel, model="fd")), digits=3)
-kable(tidy(plm(a1c~dolper1000units-1, data=panel, model="fd", subset=(age.x<18))), digits=3)
-kable(tidy(plm(a1c~dolper1000units-1, data=panel, model="fd", subset=((age.x>=18) & (age.x<65)))), digits=3)
-kable(tidy(plm(a1c~dolper1000units-1, data=panel, model="fd", subset=(age.x>=65))), digits=3)
-kable(tidy(plm(a1c~dolper1000units-1, data=panel, model="fd", subset=(type==1))), digits=3)
-kable(tidy(plm(a1c~dolper1000units-1, data=panel, model="fd", subset=(type==2))), digits=3)
+kable(tidy(plm(a1c~dolper1000units-1, data=panel, model="between")), digits=3)
+kable(tidy(plm(a1c~age.x + sex.x + zip.x + timeenr+dolper1000units-1, data=panel, model="between")), digits=3)
+kable(tidy(plm(a1c~age.x + sex.x + zip.x + timeenr+dolper1000units-1, data=panel, model="between", subset=(age.x<18))), digits=3)
+kable(tidy(plm(a1c~age.x + sex.x + zip.x + timeenr+dolper1000units-1, data=panel, model="between", subset=((age.x>=18) & (age.x<65)))), digits=3)
+kable(tidy(plm(a1c~age.x + sex.x + zip.x + timeenr+dolper1000units-1, data=panel, model="between", subset=(age.x>=65))), digits=3)
+kable(tidy(plm(a1c~age.x + sex.x + zip.x + timeenr+dolper1000units-1, data=panel, model="between", subset=(type==1))), digits=3)
+kable(tidy(plm(a1c~age.x + sex.x + zip.x + timeenr+dolper1000units-1, data=panel, model="between", subset=(type==2))), digits=3)
 
